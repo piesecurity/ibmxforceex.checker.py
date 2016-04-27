@@ -80,19 +80,18 @@ def get_sig_info(signame, xpu):
 	x = rowz
 	#Convert the number to a string"
 	get_cve_info (str(x['xfdbid']), signame, xpu)
-   # print json.dumps(siglist, sort_keys=True, indent=3, separators=(',', ': '))
 
 def get_cve_info(vulid, signame, xpu):
     apiurl = url + "/vulnerabilities/" 
     scanurl = vulid
     vulidlist = send_request(apiurl, scanurl)
-    #print json.dumps(vulidlist, sort_keys=True, indent=3, separators=(',', ': '))
     if "stdcode" in vulidlist:
 	    for rowz in vulidlist['stdcode']:
 		cve = rowz
 		if "CVE" in cve:
 			call_output(cve,vulid,signame,xpu)
     else:
+	#Write "NONE" if there just isn't a CVE number with a vulid. It happens sometimes
     	call_output("NONE",vulid,signame,xpu)
 def call_output(cve,vulid,signame,xpu):
 	print "%s,%s,%s,%s" % (xpu,signame,vulid,cve)
