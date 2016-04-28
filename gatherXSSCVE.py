@@ -98,11 +98,12 @@ def call_output(cve,vulid,signame,xpu):
 	#Flush the buffer because I am impaitent
 	sys.stdout.flush()
 
-#This section doesn't work
-#if "XPU" in sys.argv:
-#    get_xpu_info(sys.argv[1])
-#else: 
-#a    get_xpu_info('XPU 35.060')
+#This section doesn't work TODO: Make it work properly using all python arguments properly
+#if "XPU" in str(sys.argv[1]):
+#        print (str(sys.argv[1]))
+#else:
+#        print "nope"
+
 
 
 #Example - getting a list of all XPU
