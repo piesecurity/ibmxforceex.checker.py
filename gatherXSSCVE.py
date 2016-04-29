@@ -46,7 +46,7 @@ def get_token():
 	    tokenf = open(mytempfile,"r")
 	    token = tokenf.readline()
 	   #Check the API key to see if it is a API key or token, either should work. API Keys are base64 encoded
-	     try:
+	    try:
 		standard_b64decode(token)
 		apitype = "Basic "
 	    except TypeError:
@@ -75,6 +75,12 @@ def get_sig_info(signame, xpu):
     apiurl = url + "/signatures/" 
     scanurl = signame
     siglist = send_request(apiurl, scanurl)
+    #Some signatures claim they cover over 100 vulnerabilites, these are rare and I don't really trust those signatures provide that much coverage
+    if siglist['covers']['total_rows'] > 100:
+	print "%s,%s,over 100 vulns covered,skipped" % (xpu,signame)
+	#Flush the buffer because I am impaitent
+	sys.stdout.flush()
+	return None
     for rowz in siglist['covers']['rows']:
 	#Set rows as a new variable so it knows there is a dictionary	
 	x = rowz
@@ -107,12 +113,13 @@ def call_output(cve,vulid,signame,xpu):
 
 
 #Example - getting a list of all XPU
-xpunumberlist = ["33.050","33.060","33.070","33.080","33.090","33.10","33.110","33.120","34.010","34.020","34.030","34.040","34.050","34.060","34.070","34.080","34.090","34.10","34.110","34.120","35.010","35.020","35.030","35.040","35.050","35.060","35.070","35.080","35.090","35.10","35.110","35.120","36.010","36.020","36.030","36.040"]
-
-for xpu in xpunumberlist:
-	get_xpu_info(str(xpu))
+#xpunumberlist = ["33.050","33.060","33.070","33.080","33.090","33.10","33.110","33.120","34.010","34.020","34.030","34.040","34.050","34.060","34.070","34.080","34.090","34.10","34.110","34.120","35.010","35.020","35.030","35.040","35.050","35.060","35.070","35.080","35.090","35.10","35.110","35.120","36.010","36.020","36.030","36.040"]
+#
+#for xpu in xpunumberlist:
+#	get_xpu_info(str(xpu))
 #End Example
 
 #Example - getting all CVEs associated with one signature name
 #get_sig_info("JavaObjectStream_TraxTemplates_Exec","manual")
 #End Example
+get_sig_info("JavaObjectStream_TraxTemplates_Exec","manual")
