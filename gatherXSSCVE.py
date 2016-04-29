@@ -28,7 +28,7 @@ def send_request(url, scanurl):
 			#print json.dumps(jdata, sort_keys=True, indent=3, separators=(',', ': '))
 			return jdata
 		except urllib2.HTTPError, e:
-			print scanurl +  " " +str(e)
+			sys.stderr.write(scanurl +  " " + str(e) + "\n")
 			#Flush the buffer because I am impaitent
 			sys.stdout.flush()
 			if ("524:" in str(e)) or ("502:" in str(e)):
