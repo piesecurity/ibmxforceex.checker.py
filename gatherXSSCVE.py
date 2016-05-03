@@ -7,6 +7,7 @@ import hashlib
 import os.path
 import tempfile
 import sys
+import argparse
 from optparse import OptionParser
 from random import randint
 from time import sleep
@@ -104,14 +105,29 @@ def call_output(cve,vulid,signame,xpu):
 	#Flush the buffer because I am impaitent
 	sys.stdout.flush()
 
-#This section doesn't work TODO: Make it work properly using all python arguments properly
-#if "XPU" in str(sys.argv[1]):
-#        print (str(sys.argv[1]))
-#else:
-#        print "nope"
-
-
-
+#Argparse is much easier than the other tutorials I saw. I can work with this
+parser = argparse.ArgumentParser(description="Query the IBM Xforce API to get a csv output of threats to covered CVEs. Perfect for the SIEM in your life")
+method = parser.add_mutually_exclusive_group()
+method.add_argument("-x", "--xpu",  help="Lookup XPU Number")
+method.add_argument("-s", "--sig", help="Lookup Signature Name")
+method.add_argument("-xl", "--xpulist",  help="Lookup XPU Numbers From List")
+method.add_argument("-sl", "--siglist", help="Lookup Sigs From List")
+args = parser.parse_args()
+if args.xpu:
+	get_xpu_info(str(args.xpu))
+elif args.sig:
+	get_sig_info(args.sig,"N/A")
+elif args.xpulist:
+	with open(args.xpulist) as f:
+	    for line in f:
+		line = line.rstrip('\n')
+		get_xpu_info(line)
+elif args.siglist:
+	with open(args.siglist) as f:
+	    for line in f:
+		line = line.rstrip('\n')
+		get_sig_info(line,"N/A")
+#Old Examples
 #Example - getting a list of all XPU
 #xpunumberlist = ["33.050","33.060","33.070","33.080","33.090","33.10","33.110","33.120","34.010","34.020","34.030","34.040","34.050","34.060","34.070","34.080","34.090","34.10","34.110","34.120","35.010","35.020","35.030","35.040","35.050","35.060","35.070","35.080","35.090","35.10","35.110","35.120","36.010","36.020","36.030","36.040"]
 #
@@ -122,4 +138,4 @@ def call_output(cve,vulid,signame,xpu):
 #Example - getting all CVEs associated with one signature name
 #get_sig_info("JavaObjectStream_TraxTemplates_Exec","manual")
 #End Example
-get_sig_info("JavaObjectStream_TraxTemplates_Exec","manual")
+#get_sig_info("JavaObjectStream_TraxTemplates_Exec","manual")
