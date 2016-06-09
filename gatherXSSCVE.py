@@ -40,9 +40,8 @@ def send_request(url, scanurl):
 
 
 def get_token():
-    #To avoid this function put your api key in /tmp/IXFtoken
-    mytempfile = str(tempfile.gettempdir()) 
-    mytempfile += "/IXFtoken"
+    #To avoid this function put your api key in ./IXFtoken
+    mytempfile = "./IXFtoken"
     if os.path.isfile(mytempfile):
 	    tokenf = open(mytempfile,"r")
 	    token = tokenf.readline()
@@ -51,11 +50,11 @@ def get_token():
 		standard_b64decode(token)
 		apitype = "Basic "
 	    except TypeError:
-		print "I believe the other types of API Token has been removed, add a base64 of your key to /tmp/IXFtoken. To be fixed"
+		print "I believe the other types of API Token has been removed, add a base64 of your key to ./IXFtoken. To be fixed"
 		exit()
 		#apitype = "Bearer "
     else:
-	    print "Support for Anonymous API has been removed, add a base64 of your key to /tmp/IXFToken. To be fixed"
+	    print "Support for Anonymous API has been removed, add a base64 of your key to ./IXFToken. To be fixed"
 	    #url = "https://api.xforce.ibmcloud.com/auth/anonymousToken"
 	    #data = urllib2.urlopen(url)
 	    #t = json.load(data)
