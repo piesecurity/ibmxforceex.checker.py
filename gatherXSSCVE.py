@@ -20,7 +20,7 @@ def send_request(url, scanurl):
 			token, apitype= get_token()
 			furl = url + urllib.quote(scanurl)
 			htoken = apitype + token
-			headers = {'Authorization': htoken,}
+			headers = {'Authorization': htoken, 'Accept': "application/json"}
 			randSleep = randint(0,1)
 			sleep(randSleep)
 			request = urllib2.Request(furl, None, headers)
@@ -51,15 +51,18 @@ def get_token():
 		standard_b64decode(token)
 		apitype = "Basic "
 	    except TypeError:
-		apitype = "Bearer "
+		print "I believe the other types of API Token has been removed, add a base64 of your key to /tmp/IXFtoken. To be fixed"
+		exit()
+		#apitype = "Bearer "
     else:
-	    url = "https://api.xforce.ibmcloud.com/auth/anonymousToken"
-	    data = urllib2.urlopen(url)
-	    t = json.load(data)
-	    tokenf = open(mytempfile,"w")
-            token = str(t['token'])
-            tokenf.write(token)
-	    apitype = "Bearer "
+	    print "Support for Anonymous API has been removed, add a base64 of your key to /tmp/IXFToken. To be fixed"
+	    #url = "https://api.xforce.ibmcloud.com/auth/anonymousToken"
+	    #data = urllib2.urlopen(url)
+	    #t = json.load(data)
+	    #tokenf = open(mytempfile,"w")
+            #token = str(t['token'])
+            #tokenf.write(token)
+	    #apitype = "Bearer "
     return (token,apitype) 
 
 def get_xpu_info(xpu):
@@ -114,13 +117,23 @@ method.add_argument("-xl", "--xpulist",  help="Lookup XPU Numbers From List")
 method.add_argument("-sl", "--siglist", help="Lookup Sigs From List")
 args = parser.parse_args()
 if args.xpu:
-	get_xpu_info(str(args.xpu))
+	#Add the XPU if it isn't there
+	if args.xpu.find("XPU ") < 0:
+		clean_xpu = "XPU " + str(args.xpu)
+	else:
+		clean_xpu = str(args.xpu)
+	get_xpu_info(clean_xpu)
 elif args.sig:
 	get_sig_info(args.sig,"N/A")
 elif args.xpulist:
 	with open(args.xpulist) as f:
 	    for line in f:
 		line = line.rstrip('\n')
+		#Add the XPU if it isn't there
+		if args.xpu.find("XPU ") < 0:
+			clean_xpu = "XPU " + str(args.xpu)
+		else:
+			clean_xpu = str(args.xpu)
 		get_xpu_info(line)
 elif args.siglist:
 	with open(args.siglist) as f:
