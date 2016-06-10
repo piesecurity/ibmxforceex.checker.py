@@ -5,13 +5,12 @@ import urllib2
 import json
 import hashlib
 import os.path
-import tempfile
 import sys
 import argparse
 from optparse import OptionParser
 from random import randint
 from time import sleep
-from base64 import standard_b64decode
+from base64 import standard_b64decode, standard_b64encode
 url = "https://api.xforce.ibmcloud.com"
 def send_request(url, scanurl):
 	while True:
@@ -48,13 +47,13 @@ def get_token():
 	   #Check the API key to see if it is a API key or token, either should work. API Keys are base64 encoded
 	    try:
 		standard_b64decode(token)
-		apitype = "Basic "
+		apiauthheader = "Basic "
 	    except TypeError:
-		print "I believe the other types of API Token has been removed, add a base64 of your key to ./IXFtoken. To be fixed"
+		print "Your API key doesn't look right. Go get an API key then use the -a switch to save your user:pass to ./IXFtoken" 
 		exit()
-		#apitype = "Bearer "
     else:
-	    print "Support for Anonymous API has been removed, add a base64 of your key to ./IXFToken. To be fixed"
+	    print "Support for Anonymous API has been removed. Go get an API key then use the -a switch to save your user:pass to ./IXFtoken"
+	    exit ()
 	    #url = "https://api.xforce.ibmcloud.com/auth/anonymousToken"
 	    #data = urllib2.urlopen(url)
 	    #t = json.load(data)
@@ -62,7 +61,7 @@ def get_token():
             #token = str(t['token'])
             #tokenf.write(token)
 	    #apitype = "Bearer "
-    return (token,apitype) 
+    return (token,apiauthheader) 
 
 def get_xpu_info(xpu):
     apiurl = url + "/signatures/xpu/" 
@@ -112,8 +111,9 @@ parser = argparse.ArgumentParser(description="Query the IBM Xforce API to get a 
 method = parser.add_mutually_exclusive_group()
 method.add_argument("-x", "--xpu",  help="Lookup XPU Number")
 method.add_argument("-s", "--sig", help="Lookup Signature Name")
-method.add_argument("-xl", "--xpulist",  help="Lookup XPU Numbers From List")
-method.add_argument("-sl", "--siglist", help="Lookup Sigs From List")
+method.add_argument("--xpulist",  metavar= "<file>", help="Lookup XPU Numbers From List")
+method.add_argument( "--siglist", metavar="<file>", help="Lookup Sigs From List")
+method.add_argument("-a", "--api", metavar="username:password",help="Create IXFToken from you user:pass API key")
 args = parser.parse_args()
 if args.xpu:
 	#Add the XPU if it isn't there
@@ -139,15 +139,8 @@ elif args.siglist:
 	    for line in f:
 		line = line.rstrip('\n')
 		get_sig_info(line,"N/A")
-#Old Examples
-#Example - getting a list of all XPU
-#xpunumberlist = ["33.050","33.060","33.070","33.080","33.090","33.10","33.110","33.120","34.010","34.020","34.030","34.040","34.050","34.060","34.070","34.080","34.090","34.10","34.110","34.120","35.010","35.020","35.030","35.040","35.050","35.060","35.070","35.080","35.090","35.10","35.110","35.120","36.010","36.020","36.030","36.040"]
-#
-#for xpu in xpunumberlist:
-#	get_xpu_info(str(xpu))
-#End Example
-
-#Example - getting all CVEs associated with one signature name
-#get_sig_info("JavaObjectStream_TraxTemplates_Exec","manual")
-#End Example
-#get_sig_info("JavaObjectStream_TraxTemplates_Exec","manual")
+elif args.api:
+	mytempfile = "./IXFtoken"
+	tokenf = open(mytempfile,"w")
+	token = standard_b64encode(str(args.api))
+	tokenf.write(token)
