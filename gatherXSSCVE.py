@@ -129,11 +129,11 @@ elif args.xpulist:
 	    for line in f:
 		line = line.rstrip('\n')
 		#Add the XPU if it isn't there
-		if args.xpu.find("XPU ") < 0:
-			clean_xpu = "XPU " + str(args.xpu)
+		if line.find("XPU ") < 0:
+			clean_xpu = "XPU " + str(line)
 		else:
-			clean_xpu = str(args.xpu)
-		get_xpu_info(line)
+			clean_xpu = str(line)
+		get_xpu_info(clean_xpu)
 elif args.siglist:
 	with open(args.siglist) as f:
 	    for line in f:
