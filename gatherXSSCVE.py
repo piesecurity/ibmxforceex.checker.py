@@ -77,6 +77,8 @@ def get_sig_info(signame, xpu):
     apiurl = url + "/signatures/" 
     scanurl = signame
     siglist = send_request(apiurl, scanurl)
+    vullist = []
+    cvelist = []
     #Some signatures claim they cover over 100 vulnerabilites, these are rare and I don't really trust those signatures provide that much coverage
     if siglist['covers']['total_rows'] > 100:
 	print "%s,%s,over 100 vulns covered,skipped" % (xpu,signame)
@@ -86,8 +88,13 @@ def get_sig_info(signame, xpu):
     for rowz in siglist['covers']['rows']:
 	#Set rows as a new variable so it knows there is a dictionary	
 	x = rowz
+	vulid = str(x['xfdbid'])
+	vullist.append(vulid)
 	#Convert the number to a string"
-	get_cve_info (str(x['xfdbid']), signame, xpu)
+	cvelist.append(get_cve_info (vulid, signame, xpu))
+	
+    call_output(cvelist,vullist,signame,xpu)
+
 
 def get_cve_info(vulid, signame, xpu):
     apiurl = url + "/vulnerabilities/" 
@@ -97,14 +104,24 @@ def get_cve_info(vulid, signame, xpu):
 	    for rowz in vulidlist['stdcode']:
 		cve = rowz
 		if "CVE" in cve:
-			call_output(cve,vulid,signame,xpu)
+			return cve
     else:
-	#Write "NONE" if there just isn't a CVE number with a vulid. It happens sometimes
-    	call_output("NONE",vulid,signame,xpu)
-def call_output(cve,vulid,signame,xpu):
-	print "%s,%s,%s,%s" % (xpu,signame,vulid,cve)
+	#return "NONE" if there just isn't a CVE number with a vulid. It happens sometimes
+    	return "NONE"
+
+def call_output(cvelist,vullist,signame,xpu):
+	lineCVE = ""
+	for c in cvelist:
+		lineCVE = lineCVE + c + ","
+	lineCVE = lineCVE[:-1]
+	print "%s,%s,\"%s\"" % (xpu,signame,lineCVE)
 	#Flush the buffer because I am impaitent
 	sys.stdout.flush()
+	#Legacy
+#	for v,c in zip(vullist,cvelist):
+#		print "%s,%s,%s,%s" % (xpu,signame,v,c)
+#		#Flush the buffer because I am impaitent
+#		sys.stdout.flush()
 
 #Argparse is much easier than the other tutorials I saw. I can work with this
 parser = argparse.ArgumentParser(description="Query the IBM Xforce API to get a csv output of threats to covered CVEs. Perfect for the SIEM in your life")
