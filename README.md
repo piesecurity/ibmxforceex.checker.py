@@ -9,7 +9,7 @@ This is my first python project :-)
 Added gatherXSSCVE.py
 Also created cveFormatConvert to correct and issue with an eariler version of gatherXSSCVE.py
 
-On August 1st 2016, X-Force changed the policy on API Calls. gatherXSSCVE can easily exceed the 5,000 a month quota. Be sure not to use look up too many XPUs at once.
+On August 1st 2016, X-Force changed the policy on API Calls. gatherXSSCVE can easily exceed the 5,000 a month quota. Be sure not to look up too many XPUs at once.
 
 Excerpt from the notification:
 
