@@ -11,11 +11,13 @@ from optparse import OptionParser
 from random import randint
 from time import sleep
 from base64 import standard_b64decode, standard_b64encode
+
 url = "https://api.xforce.ibmcloud.com"
+
 def send_request(url, scanurl):
 	while True:
 		try:
-			#Go get a token
+			#Go Get A Token From ./IXFToken
 			token, apitype= get_token()
 			furl = url + urllib.quote(scanurl)
 			htoken = apitype + token
@@ -25,14 +27,13 @@ def send_request(url, scanurl):
 			request = urllib2.Request(furl, None, headers)
 			data = urllib2.urlopen(request)
 			jdata = json.loads(data.read())
-			#print json.dumps(jdata, sort_keys=True, indent=3, separators=(',', ': '))
 			return jdata
 		except urllib2.HTTPError, e:
 			sys.stderr.write(scanurl +  " " + str(e) + "\n")
 			#Flush the buffer because I am impatient
 			sys.stdout.flush()
 			if ("524:" in str(e)) or ("502:" in str(e)):
-				#In large testing, the API interface returns 524 or 502 error when it is tired. sleep for a while then retry
+				#In large testing, the API interface returns 524 or 502 error when it is tired (rate limited). I let it sleep for a while then retry
 				sleep(180)
 			else:	
 				return None
@@ -54,6 +55,7 @@ def get_token():
     else:
 	    print "Support for Anonymous API has been removed. Go get an API key then use the -a switch to save your user:pass to ./IXFtoken"
 	    exit ()
+	    #When the Anonymous API worked, this code block worked. The authentication header was also different.
 	    #url = "https://api.xforce.ibmcloud.com/auth/anonymousToken"
 	    #data = urllib2.urlopen(url)
 	    #t = json.load(data)
@@ -91,7 +93,7 @@ def get_sig_info(signame, xpu):
 	vulid = str(x['xfdbid'])
 	vullist.append(vulid)
 	#Convert the number to a string"
-	cvelist.append(get_cve_info (vulid, signame, xpu))
+	cvelist.append(get_cve_info(vulid, signame, xpu))
 	
     call_output(cvelist,vullist,signame,xpu)
 
@@ -133,7 +135,7 @@ method.add_argument( "--siglist", metavar="<file>", help="Lookup Sigs From List"
 method.add_argument("-a", "--api", metavar="username:password",help="Create IXFToken from you user:pass API key")
 args = parser.parse_args()
 if args.xpu:
-	#Add the XPU if it isn't there
+	#Add the String "XPU" if it isn't there
 	if args.xpu.find("XPU ") < 0:
 		clean_xpu = "XPU " + str(args.xpu)
 	else:
