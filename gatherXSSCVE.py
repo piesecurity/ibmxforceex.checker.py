@@ -29,7 +29,7 @@ def send_request(url, scanurl):
 			return jdata
 		except urllib2.HTTPError, e:
 			sys.stderr.write(scanurl +  " " + str(e) + "\n")
-			#Flush the buffer because I am impaitent
+			#Flush the buffer because I am impatient
 			sys.stdout.flush()
 			if ("524:" in str(e)) or ("502:" in str(e)):
 				#In large testing, the API interface returns 524 or 502 error when it is tired. sleep for a while then retry
@@ -82,7 +82,7 @@ def get_sig_info(signame, xpu):
     #Some signatures claim they cover over 100 vulnerabilites, these are rare and I don't really trust those signatures provide that much coverage
     if siglist['covers']['total_rows'] > 100:
 	print "%s,%s,over 100 vulns covered,skipped" % (xpu,signame)
-	#Flush the buffer because I am impaitent
+	#Flush the buffer because I am impatient
 	sys.stdout.flush()
 	return None
     for rowz in siglist['covers']['rows']:
@@ -115,12 +115,12 @@ def call_output(cvelist,vullist,signame,xpu):
 		lineCVE = lineCVE + c + ","
 	lineCVE = lineCVE[:-1]
 	print "%s,%s,\"%s\"" % (xpu,signame,lineCVE)
-	#Flush the buffer because I am impaitent
+	#Flush the buffer because I am impatient
 	sys.stdout.flush()
-	#Legacy
+	#Call to the legacy output writer which put a unique CVE on a new line. That doesn't work for my SIEM.
 #	for v,c in zip(vullist,cvelist):
 #		print "%s,%s,%s,%s" % (xpu,signame,v,c)
-#		#Flush the buffer because I am impaitent
+#		#Flush the buffer because I am impatient
 #		sys.stdout.flush()
 
 #Argparse is much easier than the other tutorials I saw. I can work with this
