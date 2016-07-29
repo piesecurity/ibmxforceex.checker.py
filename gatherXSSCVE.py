@@ -20,7 +20,7 @@ def send_request(url, scanurl):
 			#Go Get A Token From ./IXFToken
 			token, apitype= get_token()
 			furl = url + urllib.quote(scanurl)
-			htoken = apitype + token
+			htoken = apitype + token.strip('\n')
 			headers = {'Authorization': htoken, 'Accept': "application/json"}
 			randSleep = randint(0,1)
 			sleep(randSleep)
