@@ -116,7 +116,11 @@ def call_output(cvelist,vullist,signame,xpu):
 	for c in cvelist:
 		lineCVE = lineCVE + c + ","
 	lineCVE = lineCVE[:-1]
-	print "%s,%s,\"%s\"" % (xpu,signame,lineCVE)
+	lineVullist = ""
+	for b in vullist:
+		lineVullist = lineVullist + b + ","
+	lineVullist = lineVullist[:-1]
+	print "%s,%s,\"%s\",\"%s\"" % (xpu,signame,lineVullist,lineCVE)
 	#Flush the buffer because I am impatient
 	sys.stdout.flush()
 	#Call to the legacy output writer which put a unique CVE on a new line. That doesn't work for my SIEM.
